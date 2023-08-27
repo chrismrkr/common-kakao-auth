@@ -1,6 +1,6 @@
 # Login API Server
 
-목표: Kakao, Naver, Google 등 OAuth2.0 지원하는 소셜미디어 연동 인증 및 인가(Token 방식) 기능 제공 API 서버 구현
+목표: 인증 및 인가(Token 방식) 기능 제공 API 서버 구현 : OAuth2.0 방식
 
 ## 동작 과정
 

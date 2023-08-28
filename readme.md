@@ -6,6 +6,6 @@
 
 ### Authentication(인증)
 
-
+![oauth2-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/54815ca1-b80e-4937-a0aa-e5383b2b1dae)
 
 ### Authorization(인가)

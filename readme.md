@@ -8,6 +8,8 @@ Client 웹 페이지에서 서버로 인증(Authentication) 요청을 하면, �
 
 ### Authentication(인증)
 
+클라이언트는 아래의 과정을 통해 AccessToken을 전달받는다. AccessToken에는 리소스 접근을 위한 권한정보가 존재한다.
+
 ![oauth2-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/54815ca1-b80e-4937-a0aa-e5383b2b1dae)
 
 ### Authorization(인가)

@@ -1,4 +1,4 @@
-package common.loginapiserver.security.repository;
+package common.loginapiserver.security.oauth2;
 
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import common.loginapiserver.security.utils.CookieUtils;

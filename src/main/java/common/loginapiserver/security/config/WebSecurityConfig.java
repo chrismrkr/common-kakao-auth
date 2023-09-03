@@ -1,8 +1,9 @@
 package common.loginapiserver.security.config;
 
-import common.loginapiserver.security.handler.OAuth2AuthenticationSuccessHandler;
-import common.loginapiserver.security.repository.CookieAuthorizationRequestRepository;
-import common.loginapiserver.security.service.CustomOAuth2UserService;
+import common.loginapiserver.security.oauth2.JwtAuthorizationFilter;
+import common.loginapiserver.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import common.loginapiserver.security.oauth2.CookieAuthorizationRequestRepository;
+import common.loginapiserver.security.oauth2.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @Configuration
@@ -18,6 +20,7 @@ public class WebSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -32,8 +35,8 @@ public class WebSecurityConfig {
         //요청에 대한 권한 설정
         http.authorizeRequests()
                 .antMatchers("/oauth2/**").permitAll()
-                .antMatchers("/success").permitAll()
                 .antMatchers("/").permitAll()
+                .antMatchers("/data").hasRole("USER")
                 .anyRequest().authenticated();
 
         http.oauth2Login()
@@ -48,8 +51,10 @@ public class WebSecurityConfig {
                 // redirectEndpoint URI로 redirect 이후, 인가코드 <-> accessToken 교환 -> 실행할 service 설정
                 .userInfoEndpoint().userService(customOAuth2UserService)
                 .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler);
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(null);
 
+        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

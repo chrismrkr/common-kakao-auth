@@ -1,4 +1,4 @@
-package common.loginapiserver.security.service;
+package common.loginapiserver.security.oauth2;
 
 import common.loginapiserver.entity.Member;
 import common.loginapiserver.entity.embeddable.OAuth2Info;

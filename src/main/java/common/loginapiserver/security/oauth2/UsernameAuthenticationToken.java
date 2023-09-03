@@ -1,4 +1,4 @@
-package common.loginapiserver.security.token;
+package common.loginapiserver.security.oauth2;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +14,7 @@ public class UsernameAuthenticationToken extends AbstractAuthenticationToken{
     public UsernameAuthenticationToken(Object principal, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.principal = principal;
-        this.setAuthenticated(true);
+        super.setAuthenticated(true);
     }
 
     @Override

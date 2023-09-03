@@ -1,4 +1,4 @@
-package common.loginapiserver.security.jwt;
+package common.loginapiserver.security.oauth2.jwt;
 
 import lombok.Getter;
 

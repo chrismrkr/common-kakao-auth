@@ -29,3 +29,8 @@ AccessToken에는 리소스 접근을 위한 권한이 존재하고, 클라이�
 FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/main/Spring/springSecurity/springSecuritySummary.md#27-filtersecurityinterceptor-authorization
 
 ![jwt-auth-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/b5ebe6c2-c81a-4e19-81ca-34b9338b626c)
+
+
+## 트러블 슈팅
+
+AccessToken, RefreshToken이 모두 만료된 경우에 Login Page로 redirect 되지 않은 문제 분석 중..

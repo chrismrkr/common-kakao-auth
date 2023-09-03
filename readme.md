@@ -26,6 +26,8 @@ AccessToken에는 리소스 접근을 위한 권한이 존재하고, 클라이�
 
 만약, 적절한 권한이라면 클라이언트에 리소스를 response하고, 그렇지 않은 경우는 AccessDeniedHandler에 따라 처리된다.
 
-FilterSecurityInterceptor(인가 관련 Filter) 참고: 
+FilterSecurityInterceptor 참고 링크:
+
+
  
 ![jwt-authorization-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/ffc397ee-6400-4a3a-97d3-85b1f5d4a047)

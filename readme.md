@@ -16,3 +16,4 @@ AccessToken에는 리소스 접근을 위한 권한이 존재하고, 이를 Cook
 
 ### Authorization(인가)
  
+![jwt-authorization-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/ffc397ee-6400-4a3a-97d3-85b1f5d4a047)

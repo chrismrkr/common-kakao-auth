@@ -31,4 +31,6 @@ FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/m
 ![jwt-auth-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/b5ebe6c2-c81a-4e19-81ca-34b9338b626c)
 
 
+## 트러블 슈팅
 
+'OAUTH2.0'으로 가입하기를 누를 때 마다 (AccessToken, RefreshToken)이 서버에 중복해서 저장되는 문제 해결 중

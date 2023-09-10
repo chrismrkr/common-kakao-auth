@@ -32,6 +32,10 @@ FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/m
 
 ## Access Token, Refresh Token 관리 방식
 
++ Access Token: httpOnly=true Cookie에 담아서 클라이언트에 전달함.
++ Refresh Token: 서버 DB에 저장함. 만약 Access Token이 만료되면, DB의 Refresh Token을 확인하여 신규 Access Token 발급 여부를 결정함.
+
+## 
 
 
 ## 트러블 슈팅

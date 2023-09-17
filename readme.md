@@ -10,10 +10,10 @@ Client 웹 페이지에서 서버로 인증(Authentication) 요청을 하면, �
 ```shell
 jar xvf [file_name].jar
 cd BOOT-INF/classes
-vi application-oauth.properties
 ```
 
 ```shell
+vi application-oauth.properties
 vi application.properties
 ```
 

@@ -4,6 +4,42 @@
 
 Client 웹 페이지에서 서버로 인증(Authentication) 요청을 하면, 리소스 인가 요청을 위한 JWT 토큰을 반환하는 API 서버를 제공함.
 
+## How to run in Docker Container
+
+### Step1. Download JAR File and edit
+```shell
+jar xvf [file_name].jar
+cd BOOT-INF/classes
+vi application-oauth.properties
+```
+
+```shell
+vi application.properties
+```
+
+```shell
+cd ../..
+jar uvf application.jar BOOT-INF/classes/application.properties
+jar uvf application.jar BOOT-INF/classes/application-oauth.properties
+```
+
+```shell
+rm -rf BOOT-INF/ META-INF/ org/
+```
+
+### Step2. Run in Docker compose
+
+```shell
+docker compose up --build
+```
+
+### Step3. Create New DB(securitydb) when not exists
+```shell
+docker exec -it [postgres_container_names] bash
+psql -U postgres
+CREATE TABLE securitydb;
+```
+
 ## 동작 과정
 
 ### Authentication(인증)

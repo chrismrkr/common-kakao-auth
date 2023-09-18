@@ -75,7 +75,7 @@ FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/m
 
 JWT는 HttpOnly=true Cookie로 전달하므로 XSS 공격을 피할 수 있음
 
-+ **CSRF**: 대응방안 필요
++ **CSRF: 대응방안 필요**
 
 CSRF 공격을 피하기 위해서 Domain Check, Cookie Same Site 등의 추가적인 설정이 필요함.
 

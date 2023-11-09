@@ -32,5 +32,4 @@ public class OAuthTokenInfoService {
         oAuthTokenInfo.updateAccessToken(newAccessToken);
         return oAuthTokenInfo;
     }
-
 }

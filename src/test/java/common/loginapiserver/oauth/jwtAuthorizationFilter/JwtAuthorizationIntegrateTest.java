@@ -18,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +28,6 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,7 +35,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
-public class JwtAuthorizationIntegrateTest {
+public class
+JwtAuthorizationIntegrateTest {
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -116,8 +115,8 @@ public class JwtAuthorizationIntegrateTest {
                 .andExpect(MockMvcResultMatchers.status().is3xxRedirection());
 
         // then
-        String contentAsString = perform.andReturn().getResponse().getContentAsString();
-        log.info("[log] {}", contentAsString);
+        String redirectedUrl = perform.andReturn().getResponse().getRedirectedUrl();
+        log.info("[Redirect URL] {}", redirectedUrl);
         Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 

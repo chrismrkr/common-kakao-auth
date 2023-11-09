@@ -50,7 +50,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         OAuthTokenInfo oAuthTokenInfo = oAuthTokenInfoService.findOAuthTokenInfo(accessToken);
         if(isExpired(oAuthTokenInfo.getRefreshToken())) {
             oAuthTokenInfoService.deleteOAuthTokenInfo(oAuthTokenInfo);
-            SecurityContextHolder.clearContext();
             throw new RuntimeException("REFRESH TOKEN EXPIRED");
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);

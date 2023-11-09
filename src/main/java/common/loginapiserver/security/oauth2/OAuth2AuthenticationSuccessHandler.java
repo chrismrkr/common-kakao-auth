@@ -21,8 +21,8 @@ import static common.loginapiserver.security.oauth2.CookieAuthorizationRequestRe
 @Component
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    @Value("${oauth2.authorizedRedirectUri}")
-    private String redirectUri;
+    @Value("${oauth2.redirect-url.success}")
+    private String defaultRedirectUrl;
     private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final OAuthTokenInfoService oAuthTokenInfoService;
@@ -43,13 +43,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
             throw new RuntimeException("REDIRECT URIS NOT MATCHED");
         }
-        String targetUri = redirectUri.orElse(getDefaultTargetUrl());
+        String targetUri = redirectUri.orElse(defaultRedirectUrl);
         MemberJwtTokenInfo memberJwtTokenInfo = jwtTokenProvider.generateJwtToken(authentication);
         oAuthTokenInfoService.saveOAuthTokenInfo(memberJwtTokenInfo.getAccessToken(),
                                              memberJwtTokenInfo.getRefreshToken());
+
         return UriComponentsBuilder.fromUriString(targetUri)
                 .queryParam(JwtTokenProvider.ACCESS_TOKEN_KEY, memberJwtTokenInfo.getAccessToken())
-                .build().toUriString();
+                .build()
+                .toUriString();
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
@@ -59,7 +61,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private boolean isAuthorizedRedirectUri(String uri) {
         URI clientRedirectUri = URI.create(uri);
-        URI authorizedUri = URI.create(redirectUri);
+        URI authorizedUri = URI.create(defaultRedirectUrl);
         if (authorizedUri.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
                 && authorizedUri.getPort() == clientRedirectUri.getPort()) {
             return true;

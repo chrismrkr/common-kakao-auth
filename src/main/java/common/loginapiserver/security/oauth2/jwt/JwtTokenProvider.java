@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
-    public static final String ACCESS_TOKEN_KEY = "my_oauth_token";
+    public static final String ACCESS_TOKEN_KEY = "JWT";
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";

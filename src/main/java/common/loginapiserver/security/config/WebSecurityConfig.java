@@ -28,15 +28,15 @@ public class WebSecurityConfig {
         http.cors()
                 .and()
                 .httpBasic().disable()
-                .csrf().disable()
                 .formLogin().disable()
                 .rememberMe().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
         //요청에 대한 권한 설정
         http.authorizeRequests()
                 .antMatchers("/oauth2/**").permitAll()
                 .antMatchers("/").permitAll()
-                .antMatchers("/data").hasRole("USER")
+                .antMatchers("/login-failure").permitAll()
                 .anyRequest().authenticated();
 
         http.oauth2Login()
@@ -53,6 +53,7 @@ public class WebSecurityConfig {
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(null);
+
 
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

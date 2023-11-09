@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class CookieUtils {
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
@@ -23,6 +24,9 @@ public class CookieUtils {
         return Optional.empty();
     }
     public static Optional<String> readServletCookie(HttpServletRequest request, String name) {
+        if(request.getCookies() == null || request.getCookies().length == 0) {
+            return Optional.empty();
+        }
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> name.equals(cookie.getName()))
                 .map(cookie -> cookie.getValue())

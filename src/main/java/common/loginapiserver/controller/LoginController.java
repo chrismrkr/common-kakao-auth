@@ -8,15 +8,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.http.HttpResponse;
+import java.io.IOException;
 
 @RestController
-public class TmpController {
-    @GetMapping("/")
-    public String success(HttpServletResponse response, @RequestParam("token")String token) {
-        CookieUtils.addCookie(response, JwtTokenProvider.ACCESS_TOKEN_KEY, token, 3600);
-        return token;
+public class LoginController {
+    @GetMapping("/login-success")
+    public void success(HttpServletResponse response,
+                        @RequestParam(JwtTokenProvider.ACCESS_TOKEN_KEY) String accessToken) throws IOException {
+        CookieUtils.addCookie(response, JwtTokenProvider.ACCESS_TOKEN_KEY, accessToken, 3600);
+        response.sendRedirect("http://localhost:3000/login-success");
+    }
+
+    @GetMapping("/login-failure")
+    public void failure(HttpServletResponse response) throws IOException {
+        response.sendRedirect("http://localhost:3000/login-failure");
     }
 
     @GetMapping("/data")

@@ -81,4 +81,6 @@ CSRF 공격을 피하기 위해서 Domain Check, Cookie Same Site 등의 추가�
 
 ## 트러블 슈팅
 
-[OAUTH2.0]으로 가입하기를 누를 때 마다 (AccessToken, RefreshToken)이 서버에 중복해서 저장되는 문제 해결 중
+[OAUTH2.0]으로 가입하기를 누를 때 마다 (AccessToken, RefreshToken)이 DB에 계속 저장되는 문제
+
+### redis 

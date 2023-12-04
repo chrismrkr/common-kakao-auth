@@ -1,17 +1,13 @@
 package common.loginapiserver.security.oauth2;
 
-import common.loginapiserver.dto.MemberRequestDto;
-import common.loginapiserver.entity.Member;
-import common.loginapiserver.entity.MemberRole;
-import common.loginapiserver.entity.Role;
-import common.loginapiserver.entity.embeddable.AuthInfo;
-import common.loginapiserver.entity.enumerate.AuthType;
+import common.loginapiserver.domain.entity.Member;
+import common.loginapiserver.domain.entity.MemberRole;
+import common.loginapiserver.domain.entity.Role;
+import common.loginapiserver.domain.entity.enumerate.AuthType;
 import common.loginapiserver.repository.MemberRepository;
 import common.loginapiserver.repository.MemberRoleRepository;
 import common.loginapiserver.repository.RoleRepository;
-import common.loginapiserver.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -20,10 +16,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -68,13 +61,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 1. Update Member
         member.updateNickname(nickname);
         member.updateEmail(email);
-
-        // 2. Update Role : continue...
-
+        // 2. Update Role: Role Mapping 삭제하고 다시 생성함(개선 필요)
+        List<MemberRole> memberRoleList = memberRoleRepository.findByLoginId(oAuth2User.getName());
+        memberRoleList.forEach(memberRole -> {
+            memberRoleRepository.delete(memberRole);
+        });
         oAuth2User.getAuthorities().forEach((attr) -> {
             String authority = attr.getAuthority();
             if(authority.startsWith("ROLE_")) {
-
+                linkMemberWithRole(member, authority);
             }
         });
     }
@@ -94,14 +89,17 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         oAuth2User.getAuthorities().forEach((attr) -> {
             String authority = attr.getAuthority();
             if(authority.startsWith("ROLE_")) {
-                Role role = roleRepository.findByRoleName(authority).orElseGet(() -> {
-                    Role newRole = new Role(authority);
-                    Role save = roleRepository.save(newRole);
-                    return save;
-                });
-                MemberRole memberRole = new MemberRole(saveMember, role);
-                memberRoleRepository.save(memberRole);
+                linkMemberWithRole(saveMember, authority);
             }
         });
+    }
+    private void linkMemberWithRole(Member member, String authority) {
+        Role role = roleRepository.findByRoleName(authority).orElseGet(() -> {
+            Role newRole = new Role(authority);
+            Role save = roleRepository.save(newRole);
+            return save;
+        });
+        MemberRole memberRole = new MemberRole(member, role);
+        memberRoleRepository.save(memberRole);
     }
 }

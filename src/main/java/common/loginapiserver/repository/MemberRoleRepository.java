@@ -1,6 +1,6 @@
 package common.loginapiserver.repository;
 
-import common.loginapiserver.entity.MemberRole;
+import common.loginapiserver.domain.entity.MemberRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

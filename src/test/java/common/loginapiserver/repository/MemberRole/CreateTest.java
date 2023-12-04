@@ -1,18 +1,16 @@
 package common.loginapiserver.repository.MemberRole;
 
-import common.loginapiserver.entity.Member;
-import common.loginapiserver.entity.MemberRole;
-import common.loginapiserver.entity.Role;
+import common.loginapiserver.domain.entity.Member;
+import common.loginapiserver.domain.entity.MemberRole;
+import common.loginapiserver.domain.entity.Role;
 import common.loginapiserver.repository.MemberRepository;
 import common.loginapiserver.repository.MemberRoleRepository;
 import common.loginapiserver.repository.RoleRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.List;

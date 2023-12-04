@@ -1,5 +1,7 @@
-package common.loginapiserver.security.oauth2;
+package common.loginapiserver.security.handler;
 
+import common.loginapiserver.security.oauth2.CookieAuthorizationRequestRepository;
+import common.loginapiserver.security.oauth2.OAuthTokenInfoService;
 import common.loginapiserver.security.oauth2.jwt.JwtTokenProvider;
 import common.loginapiserver.security.oauth2.jwt.MemberJwtTokenInfo;
 import common.loginapiserver.security.utils.CookieUtils;
@@ -10,6 +12,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -44,14 +47,17 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             throw new RuntimeException("REDIRECT URIS NOT MATCHED");
         }
         String targetUri = redirectUri.orElse(defaultRedirectUrl);
+        // memberJwtTokenInfo: AccessToken(cookie), RefreshToken
         MemberJwtTokenInfo memberJwtTokenInfo = jwtTokenProvider.generateJwtToken(authentication);
         oAuthTokenInfoService.saveOAuthTokenInfo(memberJwtTokenInfo.getAccessToken(),
                                              memberJwtTokenInfo.getRefreshToken());
 
-        return UriComponentsBuilder.fromUriString(targetUri)
+        String resultUri = UriComponentsBuilder
+                .fromUriString(targetUri)
                 .queryParam(JwtTokenProvider.ACCESS_TOKEN_KEY, memberJwtTokenInfo.getAccessToken())
                 .build()
                 .toUriString();
+        return resultUri;
     }
 
     protected void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {

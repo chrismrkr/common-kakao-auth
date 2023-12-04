@@ -1,8 +1,8 @@
 package common.loginapiserver.repository.MemberRole;
 
-import common.loginapiserver.entity.Member;
-import common.loginapiserver.entity.MemberRole;
-import common.loginapiserver.entity.Role;
+import common.loginapiserver.domain.entity.Member;
+import common.loginapiserver.domain.entity.MemberRole;
+import common.loginapiserver.domain.entity.Role;
 import common.loginapiserver.repository.MemberRepository;
 import common.loginapiserver.repository.MemberRoleRepository;
 import common.loginapiserver.repository.RoleRepository;

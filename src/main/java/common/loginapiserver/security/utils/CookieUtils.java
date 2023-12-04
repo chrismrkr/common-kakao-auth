@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class CookieUtils {
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-        if(cookies.length == 0 || cookies == null) {
+        if(cookies == null || cookies.length == 0) {
             return Optional.empty();
         }
         for(Cookie cookie : cookies) {
@@ -41,7 +41,7 @@ public class CookieUtils {
     }
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
         Cookie[] cookies = request.getCookies();
-        if(cookies.length == 0 || cookies == null) {
+        if(cookies == null || cookies.length == 0) {
             return;
         }
         for(Cookie cookie : cookies) {

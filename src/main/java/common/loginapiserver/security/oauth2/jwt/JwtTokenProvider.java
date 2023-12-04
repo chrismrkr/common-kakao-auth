@@ -37,6 +37,7 @@ public class JwtTokenProvider {
         String name = authentication.getName();
         String authorities = authentication.getAuthorities()
                 .stream()
+                .filter((authority) -> authority.getAuthority().startsWith("ROLE_"))
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
@@ -78,18 +79,18 @@ public class JwtTokenProvider {
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernameAuthenticationToken(principal, authorities);
     }
-    public boolean isExpired(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+    public boolean isExpired(String token) {
+        Claims claims = parseClaims(token);
         Date expirationDate = claims.getExpiration();
         if(expirationDate.after(new Date())) {
             return false;
         }
         return true;
     }
-    private Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String token) {
         try {
             Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(accessToken).getBody();
+                    .parseClaimsJws(token).getBody();
             return claims;
         } catch(ExpiredJwtException e) {
             return e.getClaims();

@@ -1,4 +1,4 @@
-package common.loginapiserver.entity;
+package common.loginapiserver.domain.entity;
 
 import lombok.*;
 

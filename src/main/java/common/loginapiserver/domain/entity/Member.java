@@ -1,14 +1,12 @@
-package common.loginapiserver.entity;
+package common.loginapiserver.domain.entity;
 
-import common.loginapiserver.entity.embeddable.AuthInfo;
-import common.loginapiserver.entity.enumerate.AuthType;
+import common.loginapiserver.domain.entity.enumerate.AuthType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @Entity
@@ -23,18 +21,11 @@ public class Member {
     private String nickname;
     private String email;
     private String phoneNumber;
-    @Enumerated(value = EnumType.ORDINAL)
+    @Enumerated(value = EnumType.STRING)
     private AuthType authType;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
     private List<MemberRole> memberRoleList = new ArrayList<>();
-
-    @Embedded
-    private AuthInfo authInfo;
-
-    public void updateOAuth2Info(AuthInfo authInfo) {
-        this.authInfo = authInfo;
-    }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
@@ -44,18 +35,12 @@ public class Member {
     }
 
     public static class Builder {
-        private AuthInfo authInfo;
         private String loginId;
         private String password;
         private String nickname;
         private String email;
         private String phoneNumber;
         private AuthType authType;
-
-        public Builder authInfo(AuthInfo authInfo) {
-            this.authInfo = authInfo;
-            return this;
-        }
 
         public Builder loginId(String loginId) {
             this.loginId = loginId;
@@ -96,7 +81,6 @@ public class Member {
     }
 
     private Member(Builder builder) {
-        this.authInfo = builder.authInfo;
         this.loginId = builder.loginId;
         this.password = builder.password;
         this.nickname = builder.nickname;

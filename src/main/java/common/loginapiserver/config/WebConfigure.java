@@ -10,7 +10,7 @@ public class WebConfigure implements WebMvcConfigurer {
     @Value("${oauth2.url.allow-origin}")
     private String allowedOrigin;
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(CorsRegistry registry) { // CORS config
         registry.addMapping("/**") // 허용되는 url 패턴
                 .allowedOrigins(allowedOrigin)
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")

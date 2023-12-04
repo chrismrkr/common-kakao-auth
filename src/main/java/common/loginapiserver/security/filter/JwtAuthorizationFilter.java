@@ -1,5 +1,6 @@
-package common.loginapiserver.security.oauth2;
+package common.loginapiserver.security.filter;
 
+import common.loginapiserver.security.oauth2.OAuthTokenInfoService;
 import common.loginapiserver.security.oauth2.jwt.JwtTokenProvider;
 import common.loginapiserver.security.oauth2.jwt.MemberJwtTokenInfo;
 import common.loginapiserver.security.oauth2.jwt.OAuthTokenInfo;
@@ -27,13 +28,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Optional<String> cookie = CookieUtils.readServletCookie(request, JwtTokenProvider.ACCESS_TOKEN_KEY);
-        if(!cookie.isEmpty()) {
+        if(!cookie.isEmpty()) { // AccessToken exists
             String accessToken = cookie.get();
             if(isExpired(accessToken)) {
                 try {
                     accessToken = renewJwtToken(accessToken);
                 } catch(Exception e) {
                     filterChain.doFilter(request, response);
+                    return;
                 }
             }
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);

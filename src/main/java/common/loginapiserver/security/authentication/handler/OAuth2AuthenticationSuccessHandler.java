@@ -32,14 +32,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        String targetUri = getTargetUriWithJwt(request, response, authentication);
+        String targetUri = null;
+        try {
+            targetUri = getTargetUriWithJwt(request, response, authentication);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         if(response.isCommitted()) {
             return;
         }
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUri);
     }
-    protected String getTargetUriWithJwt(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+    protected String getTargetUriWithJwt(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws InterruptedException {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(cookie -> cookie.getValue());
         if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {

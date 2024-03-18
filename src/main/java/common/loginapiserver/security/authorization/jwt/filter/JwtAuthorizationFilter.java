@@ -33,6 +33,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             if(isExpired(accessToken)) {
                 try {
                     accessToken = renewJwtToken(accessToken);
+                    CookieUtils.addCookie(response, JwtUtils.ACCESS_TOKEN_KEY, accessToken, 3600);
                 } catch(Exception e) {
                     filterChain.doFilter(request, response);
                     return;
@@ -48,16 +49,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     @Transactional
-    private String renewJwtToken(String accessToken) {
+    private String renewJwtToken(String accessToken) throws InterruptedException {
         OAuthToken oAuthToken = oAuthTokenService.findOAuthToken(accessToken);
+        oAuthTokenService.deleteOAuthToken(oAuthToken);
         if(isExpired(oAuthToken.getRefreshToken())) {
-            oAuthTokenService.deleteOAuthToken(oAuthToken);
             throw new RuntimeException("REFRESH TOKEN EXPIRED");
         }
         Authentication authentication = jwtUtils.getAuthentication(accessToken);
         MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(authentication);
-        oAuthToken = oAuthTokenService.updateAccessToken(oAuthToken,
-                                                                memberJwtDetails.getAccessToken());
-        return oAuthToken.getAccessToken();
+        OAuthToken newOAuthToken = oAuthTokenService.saveOAuthToken(
+                memberJwtDetails.getAccessToken(), memberJwtDetails.getRefreshToken());
+        return newOAuthToken.getAccessToken();
     }
 }

@@ -5,18 +5,12 @@ import lombok.Getter;
 
 @Getter
 public class OAuthToken {
-    private Long id;
     private String accessToken;
     private String refreshToken;
 
     @Builder
-    public OAuthToken(Long id, String accessToken, String refreshToken) {
-        this.id = id;
+    public OAuthToken(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-    }
-
-    public void updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 }

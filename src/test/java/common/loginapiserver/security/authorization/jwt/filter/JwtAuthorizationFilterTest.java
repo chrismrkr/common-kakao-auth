@@ -2,6 +2,7 @@ package common.loginapiserver.security.authorization.jwt.filter;
 
 import common.loginapiserver.common.MockAuthentication;
 import common.loginapiserver.common.MockExpirationUtils;
+import common.loginapiserver.common.MockOAuthTokenRedisRepository;
 import common.loginapiserver.common.MockOAuthTokenRepository;
 import common.loginapiserver.security.authorization.jwt.filter.port.TokenService;
 import common.loginapiserver.security.authorization.jwt.domain.MemberJwtDetails;
@@ -39,7 +40,7 @@ public class JwtAuthorizationFilterTest {
     static JwtAuthorizationFilter jwtAuthorizationFilter;
     @BeforeAll
     static void init() {
-        oAuthTokenRepository = new MockOAuthTokenRepository();
+        oAuthTokenRepository = new MockOAuthTokenRedisRepository();
         tokenService = new OAuthTokenService(oAuthTokenRepository);
     }
 
@@ -87,7 +88,7 @@ public class JwtAuthorizationFilterTest {
     }
 
     @Test
-    void accessToken이_만료되고_refreshToken이_정상인_경우_AccessToken을_재발급하여_securityContext에_저장한다(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws ServletException, IOException {
+    void accessToken이_만료되고_refreshToken이_정상인_경우_AccessToken을_재발급하여_securityContext에_저장한다(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws ServletException, IOException, InterruptedException {
         // given
         String mockSecretKey = "sdfasd231ffesdgxdfg1234avasvasafd18699fadas3439";
         ExpirationUtils expirationUtils = new MockExpirationUtils(0 * 1000L, 15 * 1000L);
@@ -96,7 +97,7 @@ public class JwtAuthorizationFilterTest {
         MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(new MockAuthentication("member2", Arrays.asList("ROLE_USER")));
         String accessToken = memberJwtDetails.getAccessToken();
         String refreshToken = memberJwtDetails.getRefreshToken();
-        OAuthToken saved = oAuthTokenRepository.save(OAuthToken.builder()
+        oAuthTokenRepository.save(OAuthToken.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken).build());
         Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
@@ -114,11 +115,10 @@ public class JwtAuthorizationFilterTest {
         BDDMockito.verify(filterChain, Mockito.times(1)).doFilter(request, response);
         Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getName(), "member2");
         Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
-        Assertions.assertNotEquals(oAuthTokenRepository.findById(saved.getId()), Optional.empty());
     }
 
     @Test
-    void accessToken와_refreshToken_모두_만료인_경우_Exception이_발생한다(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws ServletException, IOException {
+    void accessToken와_refreshToken_모두_만료인_경우_Exception이_발생한다(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws ServletException, IOException, InterruptedException {
         // given
         String mockSecretKey = "sdfasd231ffesdgxdfg1234avasvasafd18699fadas3439";
         ExpirationUtils expirationUtils = new MockExpirationUtils(0 * 1000L, 0 * 1000L);
@@ -143,8 +143,83 @@ public class JwtAuthorizationFilterTest {
         jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
         // then
         BDDMockito.verify(filterChain, Mockito.times(1)).doFilter(request, response);
-        Assertions.assertEquals(oAuthTokenRepository.findById(saved.getId()), Optional.empty());
     }
 
+    @Test
+    void 일정시간_뒤에_accessToken만_만료되는_경우_토큰_재발급(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws InterruptedException, ServletException, IOException {
+        // given
+        String mockSecretKey = "sdfasd231ffesdgxdfg1234avasvasafd18699fadas3439";
+        ExpirationUtils expirationUtils = new MockExpirationUtils(2 * 1000L, 15 * 1000L);
+        JwtUtils jwtUtils = new JwtUtils(mockSecretKey, expirationUtils);
 
+        MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(new MockAuthentication("member2", Arrays.asList("ROLE_USER")));
+        String accessToken = memberJwtDetails.getAccessToken();
+        String refreshToken = memberJwtDetails.getRefreshToken();
+        oAuthTokenRepository.save(OAuthToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken).build());
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
+        BDDMockito.given(request.getCookies()).willReturn(cookies);
+        HttpServletResponse response = new MockHttpServletResponse();
+
+        jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtUtils, tokenService);
+        // when
+        jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+
+        // then
+        BDDMockito.verify(filterChain, Mockito.times(1)).doFilter(request, response);
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getName(), "member2");
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
+
+        // when
+        SecurityContextHolder.clearContext();
+        Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication());
+        Thread.sleep(3 * 1000L);
+        jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+        // then
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getName(), "member2");
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
+    }
+
+    @Test
+    void 일정시간_뒤에_accessToken과_refreshToken_모두_만료되는_경우_인가에러(@Mock HttpServletRequest request, @Mock FilterChain filterChain) throws ServletException, IOException, InterruptedException {
+        // given
+        String mockSecretKey = "sdfasd231ffesdgxdfg1234avasvasafd18699fadas3439";
+        ExpirationUtils expirationUtils = new MockExpirationUtils(2 * 1000L, 2 * 1000L);
+        JwtUtils jwtUtils = new JwtUtils(mockSecretKey, expirationUtils);
+
+        MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(new MockAuthentication("member2", Arrays.asList("ROLE_USER")));
+        String accessToken = memberJwtDetails.getAccessToken();
+        String refreshToken = memberJwtDetails.getRefreshToken();
+        oAuthTokenRepository.save(OAuthToken.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken).build());
+        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
+        BDDMockito.given(request.getCookies()).willReturn(cookies);
+        HttpServletResponse response = new MockHttpServletResponse();
+
+        jwtAuthorizationFilter = new JwtAuthorizationFilter(jwtUtils, tokenService);
+        // when
+        jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+
+        // then
+        BDDMockito.verify(filterChain, Mockito.times(1)).doFilter(request, response);
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getName(), "member2");
+        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
+
+        // when
+        SecurityContextHolder.clearContext();
+        Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication());
+        Thread.sleep(3 * 1000L);
+        jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
+        // then
+        BDDMockito.verify(filterChain, Mockito.times(2)).doFilter(request, response);
+        Assertions.assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
 }

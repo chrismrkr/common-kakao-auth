@@ -1,15 +1,18 @@
 package common.loginapiserver.security.authorization.jwt.infrastructure;
 
 import common.loginapiserver.security.authorization.jwt.domain.OAuthToken;
+import common.loginapiserver.security.authorization.jwt.infrastructure.entity.OAuthTokenDatabaseEntity;
 import common.loginapiserver.security.authorization.jwt.service.port.OAuthTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class OAuthTokenRepositoryImpl implements OAuthTokenRepository {
+@Qualifier("oauth_token_db_repository")
+public class OAuthTokenDatabaseRepositoryImpl implements OAuthTokenRepository {
     private final OAuthTokenJpaRepository oAuthTokenJpaRepository;
     @Override
     public Optional<OAuthToken> findByAccessToken(String accessToken) {
@@ -17,20 +20,13 @@ public class OAuthTokenRepositoryImpl implements OAuthTokenRepository {
                 .map(oAuthTokenEntity -> oAuthTokenEntity.to());
         return byAccessToken;
     }
-
     @Override
     public OAuthToken save(OAuthToken oAuthToken) {
-        OAuthToken save = oAuthTokenJpaRepository.save(OAuthTokenEntity.from(oAuthToken)).to();
+        OAuthToken save = oAuthTokenJpaRepository.save(OAuthTokenDatabaseEntity.from(oAuthToken)).to();
         return save;
     }
     @Override
-    public Optional<OAuthToken> findById(Long id) {
-        Optional<OAuthToken> byId = oAuthTokenJpaRepository.findById(id)
-                .map(oAuthTokenEntity -> oAuthTokenEntity.to());
-        return byId;
-    }
-    @Override
     public void delete(OAuthToken oAuthToken) {
-        oAuthTokenJpaRepository.delete(OAuthTokenEntity.from(oAuthToken));
+        oAuthTokenJpaRepository.delete(OAuthTokenDatabaseEntity.from(oAuthToken));
     }
 }

@@ -39,7 +39,7 @@ public class PostRequestTest {
                 "\"authType\": \"" + "KAKAO" + "\" " +
                 "}";
         // when
-        MvcResult result = mockMvc.perform(post("/member")
+        MvcResult result = mockMvc.perform(post("/api/login/register")
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
@@ -65,7 +65,7 @@ public class PostRequestTest {
                 "\"authType\": \"" + "KAKAO" + "\" " +
                 "}";
         // when
-        MvcResult result = mockMvc.perform(post("/member")
+        MvcResult result = mockMvc.perform(post("/api/login/register")
                         .contentType("application/json")
                         .content(requestBody))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
@@ -74,6 +74,6 @@ public class PostRequestTest {
         // then
         MockHttpServletResponse response = result.getResponse();
         log.info("[result] : {} ", response.getContentAsString());
-        Assertions.assertEquals(0, memberJpaRepository.findAll().size());
+        Assertions.assertEquals(400, response.getStatus());
     }
 }

@@ -2,44 +2,36 @@
 
 Authentication & Authorization Server using JWT
 
-- 자체 회원 가입 및 로그인 기능 지원
+- 단순 회원 가입 및 로그인 기능 지원
 - Kakao OAuth2.0을 통한 로그인 기능 지원
+- JWT를 활용한 인가 기능 지원
 
-## How to run in Docker Container
-
-### Step1. Download JAR File and edit
+## 간단하게 Docker-compose로 실행하는 방법
+### Step 1. 프로젝트 pull
+### Step 2. docker image build
 ```shell
-jar xvf [file_name].jar
-cd BOOT-INF/classes
+# 프로젝트 루트 디렉토리에서 실행
+docker build -t login-api-was ./
+```
+### Step 3. REST API 키 발급 및 Redirect URI 설정
+
+https://developers.kakao.com 카카오 개발자 홈페이지에 접속하여 '내 애플리케이션'을 생성하여 REST API 키를 발급하고 카카오 로그인에서 사용할 OAuth Redirect URI를 설정한다.
+
+OAuth Redirect URI는 http://localhost:80/api/login/oauth2/kakao로 설정한다.
+
+### Step 4. compose.yaml 수정
+
+발급받은 REST API Key를 SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID에 설정한다.
+
+```yaml
+SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID: [나의 REST API KEY]
 ```
 
+### Step 5. docker compose로 실행
 ```shell
-vi application-oauth.properties
-vi application.properties
+docker compose up
 ```
 
-```shell
-cd ../..
-jar uvf application.jar BOOT-INF/classes/application.properties
-jar uvf application.jar BOOT-INF/classes/application-oauth.properties
-```
-
-```shell
-rm -rf BOOT-INF/ META-INF/ org/
-```
-
-### Step2. Run in Docker compose
-
-```shell
-docker compose up --build
-```
-
-### Step3. Create New DB(securitydb) when not exists
-```shell
-docker exec -it [postgres_container_names] bash
-psql -U postgres
-CREATE TABLE securitydb;
-```
 
 ## 동작 과정
 

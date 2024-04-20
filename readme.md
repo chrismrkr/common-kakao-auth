@@ -31,7 +31,15 @@ SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID: [나의 REST API KEY
 ```shell
 docker compose up
 ```
+컨테이너 실행 후, http 80 포트로 통신할 수 있음
 
+## 주요 API
+
+#### 일반 계정 회원 가입 : POST /api/login/register
+
+#### 일반 로그인 : POST /api/login
+
+#### 카카오 로그인 : GET /api/oauth2/authorize/kakao
 
 ## 동작 과정
 

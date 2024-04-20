@@ -1,6 +1,9 @@
 # Login API Server
 
-Authentication & Authorization Server using JWT : Kakao OAuth2.0
+Authentication & Authorization Server using JWT
+
+- 자체 회원 가입 및 로그인 기능 지원
+- Kakao OAuth2.0을 통한 로그인 기능 지원
 
 ## How to run in Docker Container
 
@@ -73,14 +76,9 @@ FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/m
 
 + XSS: 안전함
 
-JWT는 HttpOnly=true Cookie로 전달하므로 XSS 공격을 피할 수 있음
+JWT를 HttpOnly=true Cookie로 전달하므로 XSS 공격을 피할 수 있음
 
-+ **CSRF: 대응방안 필요**
++ CSRF: 대응방안 필요
 
 CSRF 공격을 피하기 위해서 Domain Check, Cookie Same Site 등의 추가적인 설정이 필요함.
 
-## 트러블 슈팅
-
-[OAUTH2.0]으로 가입하기를 누를 때 마다 (AccessToken, RefreshToken)이 DB에 계속 저장되는 문제
-
-### redis 

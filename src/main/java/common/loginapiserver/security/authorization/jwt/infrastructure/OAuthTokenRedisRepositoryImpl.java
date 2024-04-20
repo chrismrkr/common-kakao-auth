@@ -4,6 +4,7 @@ import common.loginapiserver.security.authorization.jwt.domain.OAuthToken;
 import common.loginapiserver.security.authorization.jwt.infrastructure.entity.OAuthTokenRedisEntity;
 import common.loginapiserver.security.authorization.jwt.service.port.OAuthTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
+@Qualifier("oauth_token_redis_repository")
 public class OAuthTokenRedisRepositoryImpl implements OAuthTokenRepository {
     private final RedisTemplate redisTemplate;
     @Override

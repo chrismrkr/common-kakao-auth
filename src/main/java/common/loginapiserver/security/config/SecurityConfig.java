@@ -38,14 +38,20 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${base.login}")
+    String baseLoginUri;
+    @Value("${base.login.register}")
+    String baseLoginRegisterUri;
     @Value("${oauth2.redirect-url.success}")
-    private String loginSuccessUri;
+    String loginSuccessUri;
     @Value("{oauth2.redirect-url.failure}")
-    private String loginFailureUri;
+    String loginFailureUri;
     @Value("{oauth2.base.auth-endpoint}")
-    private String baseAuthorizationEndPoint;
+    String baseAuthorizationEndPoint;
     @Value("{oauth2.redirect.auth-endpoint.kakao}")
-    private String kakaoRedirectEndpoint;
+    String kakaoRedirectEndpoint;
+
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler authenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler authenticationFailureHandler;
@@ -65,7 +71,7 @@ public class SecurityConfig {
     }
     @Bean
     public ApiLoginProcessingFilter apiLoginProcessingFilter() {
-        ApiLoginProcessingFilter apiLoginProcessingFilter = new ApiLoginProcessingFilter("/api/login");
+        ApiLoginProcessingFilter apiLoginProcessingFilter = new ApiLoginProcessingFilter(baseLoginUri);
         apiLoginProcessingFilter.setAuthenticationManager(apiAuthenticationManager());
         apiLoginProcessingFilter.setAuthenticationSuccessHandler(authenticationSuccessHandler);
         apiLoginProcessingFilter.setAuthenticationFailureHandler(authenticationFailureHandler);
@@ -73,7 +79,7 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        //httpBasic, csrf, formLogin, rememberMe, logout, session disable
+        // httpBasic, csrf, formLogin, rememberMe, logout, session disable
         http.cors()
                 .and()
                 .httpBasic().disable()
@@ -82,25 +88,25 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        //요청에 대한 권한 설정
+        // 요청에 대한 권한 설정
         http.authorizeRequests()
                 .antMatchers("/oauth2/**").permitAll()
-                .antMatchers("/api/login").permitAll()
-                .antMatchers("/api/login/register").permitAll()
-                .antMatchers("/login/success").permitAll()
-                .antMatchers("/login/failure").permitAll()
+                .antMatchers(baseLoginUri).permitAll()
+                .antMatchers(baseLoginRegisterUri).permitAll()
+                .antMatchers(loginSuccessUri).permitAll()
+                .antMatchers(loginFailureUri).permitAll()
                 .antMatchers("/test").hasRole("USER")
                 .anyRequest().authenticated();
 
         http.oauth2Login()
                 // 로그인 인증 요청 url: localhost:8080/oauth2/authorize/kakao로 로그인 요청
                 // baseUri는 카카오 개발자 홈페이지에서 등록함
-                .authorizationEndpoint().baseUri("/oauth2/authorize/")
+                .authorizationEndpoint().baseUri("/api/oauth2/authorize/")
                 // 인증 요청을 어디에 저장하고 있을지 결정
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository) // 로그인 인증 요청 결과 저장소
                 .and()
                 // 인증이 완료되면 인가코드를 전달받는데, 어느쪽으로 보낼지를 지정함
-                .redirectionEndpoint().baseUri("/login/oauth2/kakao")
+                .redirectionEndpoint().baseUri("/api/login/oauth2/kakao")
                 .and()
                 // redirectEndpoint URI로 redirect 이후, 인가코드 <-> accessToken 교환 -> 실행할 service 설정
                 .userInfoEndpoint().userService(customOAuth2UserService)

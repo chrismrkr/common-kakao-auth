@@ -35,6 +35,9 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public MemberRole createMember(Member member) {
         try {
+            if(!isValidMemberCreate(member)) {
+                throw new IllegalArgumentException("Login Id is Duplicated!");
+            }
             member.encodePassword(passwordEncoderUtils);
             Member savedMember = memberRepository.save(member);
             Role role = getRole("ROLE_USER");
@@ -63,5 +66,10 @@ public class MemberServiceImpl implements MemberService {
     private Role getRole(String authority) {
         Role roleEntity = roleRepository.getByRoleName(authority);
         return roleEntity;
+    }
+
+    private boolean isValidMemberCreate(Member member) {
+        return memberRepository.findByLoginId(member.getLoginId())
+                .isEmpty() ? true : false;
     }
 }

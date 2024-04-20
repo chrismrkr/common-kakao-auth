@@ -1,5 +1,6 @@
 package common.loginapiserver.security.authorization.jwt.utils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,10 @@ import java.util.Date;
 
 @Component
 public class JwtExpirationUtils implements ExpirationUtils {
+    @Value("${oauth2.jwt.access-token-expiration}")
+    private String accessTokenExpiration;
+    @Value("${oauth2.jwt.refresh-token-expiration}")
+    private String refreshTokenExpiration;
 
     @Override
     public long getAccessTokenExpiration() {

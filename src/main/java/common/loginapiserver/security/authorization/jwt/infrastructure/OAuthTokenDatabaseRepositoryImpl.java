@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-@Qualifier("oauth_token_db_repository")
+@Qualifier("oauth_token_rdb_repository")
 public class OAuthTokenDatabaseRepositoryImpl implements OAuthTokenRepository {
     private final OAuthTokenJpaRepository oAuthTokenJpaRepository;
     @Override

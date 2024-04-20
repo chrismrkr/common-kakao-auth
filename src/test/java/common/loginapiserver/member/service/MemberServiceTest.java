@@ -96,4 +96,36 @@ public class MemberServiceTest {
         // then
         Assertions.assertThrows(IllegalArgumentException.class, () -> memberService.loadMemberByLoginId("member3"));
     }
+
+    @Test
+    void loginId는_중복될_수_없다() {
+        // given
+        memberService = new MemberServiceImpl(testContainer.memberRepository,
+                testContainer.memberRoleRepository,
+                testContainer.roleRepository,
+                new PasswordEncoderUtils());
+        Member member = Member.builder()
+                .loginId("member4")
+                .password("1234")
+                .nickname("m")
+                .email("email@email.com")
+                .phoneNumber("01012341234")
+                .authType(AuthType.NORMAL)
+                .build();
+        Member memberDummy = Member.builder()
+                .loginId("member4")
+                .password("1234")
+                .nickname("m")
+                .email("email@email.com")
+                .phoneNumber("01012341234")
+                .authType(AuthType.NORMAL)
+                .build();
+        memberService.createMember(member);
+        // when
+        // then
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            memberService.createMember(memberDummy);
+        });
+
+    }
 }

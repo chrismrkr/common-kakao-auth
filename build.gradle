@@ -31,7 +31,8 @@ dependencies {
 
 
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
+//	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'com.mysql:mysql-connector-j'
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-impl
@@ -47,4 +48,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+bootJar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -7,6 +7,7 @@ import common.loginapiserver.member.service.port.MemberRoleRepository;
 import common.loginapiserver.role.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 public class MemberRoleRepositoryImpl implements MemberRoleRepository {
     private final MemberRoleJpaRepository memberRoleJpaRepository;
     @Override
+    @Transactional
     public List<MemberRole> findByLoginId(String loginId) {
         List<MemberRole> memberRoleList = memberRoleJpaRepository.findByLoginId(loginId)
                 .stream().map(memberRoleEntity -> memberRoleEntity.to()).toList();
@@ -23,6 +25,7 @@ public class MemberRoleRepositoryImpl implements MemberRoleRepository {
     }
 
     @Override
+    @Transactional
     public MemberRole link(Member member, Role role) {
         MemberRoleEntity memberRoleEntity = MemberRoleEntity.from(
                 MemberRole.builder()

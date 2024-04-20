@@ -17,10 +17,10 @@ import java.io.IOException;
 @Slf4j
 @RestController
 public class MemberLoginController {
-    @GetMapping("/login/success") /* /login/success?JWT=xxxxx */
+    @GetMapping("/api/login/success") /* /login/success?JWT=xxxxx */
     public ResponseEntity<LoginResponseDto> successLogin(HttpServletResponse response,
                         @RequestParam(JwtUtils.ACCESS_TOKEN_KEY) String accessToken) throws IOException {
-
+        log.debug("[LOGIN SUCCESS]");
         CookieUtils.addCookie(response, JwtUtils.ACCESS_TOKEN_KEY, accessToken, 3600);
         LoginResponseDto loginSuccess = LoginResponseDto.builder()
                                         .loginResult(LoginResult.SUCCESS)
@@ -30,8 +30,9 @@ public class MemberLoginController {
         return responseBody;
     }
 
-    @GetMapping("/login/failure")
+    @GetMapping("/api/login/failure")
     public ResponseEntity<LoginResponseDto> failureLogin(HttpServletResponse response) throws IOException {
+        log.debug("[LOGIN FAIL]");
         LoginResponseDto loginFailure = LoginResponseDto.builder()
                                         .loginResult(LoginResult.FAIL)
                                         .responseMessage("INCORRECT ID OR PASSWORD").build();
@@ -39,13 +40,13 @@ public class MemberLoginController {
                                                         .body(loginFailure);
         return responseBody;
     }
-    @GetMapping("/logout/success")
+    @GetMapping("/api/logout/success")
     public String successLogout(HttpServletResponse response) throws IOException {
         return "ok";
     }
 
-    @GetMapping("/test")
+    @GetMapping("/api/test")
     public String test() {
-        return "ok";
+        return "test token";
     }
 }

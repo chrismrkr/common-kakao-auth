@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class OAuthTokenService implements TokenService {
     private final OAuthTokenRepository oAuthTokenRepository;
-    public OAuthTokenService(@Qualifier("oauth_token_db_repository") OAuthTokenRepository oAuthTokenRepository) {
+    public OAuthTokenService(@Qualifier("oauth_token_redis_repository") OAuthTokenRepository oAuthTokenRepository) {
         this.oAuthTokenRepository = oAuthTokenRepository;
     }
     @Override

@@ -5,7 +5,7 @@ import common.loginapiserver.security.authorization.jwt.domain.OAuthToken;
 import java.util.Optional;
 
 public interface OAuthTokenRepository {
-    Optional<OAuthToken> findByAccessToken(String accessToken) throws InterruptedException;
+    Optional<OAuthToken> findByRefreshToken(String refreshToken) throws InterruptedException;
     OAuthToken save(OAuthToken oAuthToken) throws InterruptedException;
     void delete(OAuthToken oAuthToken) throws InterruptedException;
 }

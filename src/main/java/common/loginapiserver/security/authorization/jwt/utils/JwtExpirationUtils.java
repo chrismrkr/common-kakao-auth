@@ -17,11 +17,11 @@ public class JwtExpirationUtils implements ExpirationUtils {
 
     @Override
     public long getAccessTokenExpiration() {
-        return 30 * 60 * 1000L;  // 30 min
+        return Long.parseLong(accessTokenExpiration) * 1000L;  // 30 min
     }
     @Override
     public long getRefreshTokenExpiration() {
-        return 7 * 24 * 60 * 1000L; // 7 days
+        return Long.parseLong(refreshTokenExpiration) * 1000L; // 7 days
     }
     @Override
     public Date now() {

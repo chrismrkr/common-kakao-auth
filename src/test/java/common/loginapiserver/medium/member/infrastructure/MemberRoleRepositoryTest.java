@@ -93,7 +93,7 @@ public class MemberRoleRepositoryTest {
         // when
         memberRoleRepository.link(member, role1);
         memberRoleRepository.link(member, role2);
-        List<MemberRole> memberRoleList = memberRoleRepository.findByLoginId("member");
+        List<MemberRole> memberRoleList = memberRoleRepository.findByLoginId("member3");
 
         // then
         Assertions.assertEquals(2, memberRoleList.size());

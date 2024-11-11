@@ -18,14 +18,14 @@ public class MockOAuthTokenRedisRepositoryTest {
     void 토큰_저장() throws InterruptedException {
         // given
         OAuthToken oAuthToken = OAuthToken.builder()
-                .accessToken("my-access")
                 .refreshToken("my-refresh")
+                .principal("my-principal")
                 .build();
         // when
         OAuthToken save = mockOAuthTokenRedisRepository.save(oAuthToken);
         // then
-        Assertions.assertEquals(save.getAccessToken(), oAuthToken.getAccessToken());
         Assertions.assertEquals(save.getRefreshToken(), oAuthToken.getRefreshToken());
+        Assertions.assertEquals(save.getPrincipal(), oAuthToken.getPrincipal());
     }
     @Test
     void 토큰_저장_멀티스레드환경() throws InterruptedException {
@@ -41,8 +41,8 @@ public class MockOAuthTokenRedisRepositoryTest {
                 try {
                     mockOAuthTokenRedisRepository.save(
                             OAuthToken.builder()
-                                    .accessToken("my-access")
-                                    .refreshToken("my-refresh-" + Integer.toString(finalI))
+                                    .refreshToken("my-refresh")
+                                    .principal("my-principal-" + Integer.toString(finalI))
                                     .build()
                     );
                 } catch (InterruptedException e) {
@@ -55,8 +55,6 @@ public class MockOAuthTokenRedisRepositoryTest {
         }
         latch.await();
         // then
-        log.info("my-access : {}", mockOAuthTokenRedisRepository.findByAccessToken("my-access").get().getRefreshToken() );
+        log.info("my-access : {}", mockOAuthTokenRedisRepository.findByRefreshToken("my-access").get().getRefreshToken() );
     }
-
-
 }

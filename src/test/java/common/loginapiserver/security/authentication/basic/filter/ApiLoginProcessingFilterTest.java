@@ -116,7 +116,7 @@ public class ApiLoginProcessingFilterTest {
         httpServletRequest.setContent(members);
 
         // then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> apiLoginProcessingFilter.attemptAuthentication(httpServletRequest, new MockHttpServletResponse()));
+        Assertions.assertThrows(BadCredentialsException.class, () -> apiLoginProcessingFilter.attemptAuthentication(httpServletRequest, new MockHttpServletResponse()));
     }
 
     @Test
@@ -139,6 +139,6 @@ public class ApiLoginProcessingFilterTest {
         httpServletRequest.setContent(members);
 
         // then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> apiLoginProcessingFilter.attemptAuthentication(httpServletRequest, new MockHttpServletResponse()));
+        Assertions.assertThrows(BadCredentialsException.class, () -> apiLoginProcessingFilter.attemptAuthentication(httpServletRequest, new MockHttpServletResponse()));
     }
 }

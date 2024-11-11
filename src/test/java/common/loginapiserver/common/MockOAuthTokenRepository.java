@@ -11,22 +11,22 @@ import java.util.concurrent.atomic.AtomicLong;
 public class MockOAuthTokenRepository implements OAuthTokenRepository {
     private List<OAuthToken> datas = new ArrayList<>();
     @Override
-    public Optional<OAuthToken> findByAccessToken(String accessToken) {
-        Optional<OAuthToken> any = datas.stream().filter(token -> token.getAccessToken().equals(accessToken)).findAny();
+    public Optional<OAuthToken> findByRefreshToken(String refreshToken) {
+        Optional<OAuthToken> any = datas.stream().filter(token -> token.getRefreshToken().equals(refreshToken)).findAny();
         return any;
     }
 
     @Override
     public OAuthToken save(OAuthToken oAuthToken) {
         if(datas.size() > 0) {
-            Optional<OAuthToken> any = datas.stream().filter(token -> token.getAccessToken().equals(oAuthToken.getAccessToken())).findAny();
+            Optional<OAuthToken> any = datas.stream().filter(token -> token.getRefreshToken().equals(oAuthToken.getRefreshToken())).findAny();
             if(!any.isEmpty()) {
                 datas.remove(any);
             }
         }
         OAuthToken newOAuthToken = OAuthToken.builder()
-                .accessToken(oAuthToken.getAccessToken())
                 .refreshToken(oAuthToken.getRefreshToken())
+                .principal(oAuthToken.getPrincipal())
                 .build();
         datas.add(newOAuthToken);
         return newOAuthToken;

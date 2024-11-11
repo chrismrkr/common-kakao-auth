@@ -14,19 +14,19 @@ public class OAuthTokenService implements TokenService {
         this.oAuthTokenRepository = oAuthTokenRepository;
     }
     @Override
-    public OAuthToken saveOAuthToken(String accessToken, String refreshToken) throws InterruptedException {
+    public OAuthToken saveOAuthToken(String refreshToken, Object principal) throws InterruptedException {
         OAuthToken save = oAuthTokenRepository.save(
                 OAuthToken.builder()
-                        .accessToken(accessToken)
                         .refreshToken(refreshToken)
+                        .principal(principal)
                         .build()
         );
         return save;
     }
     @Override
-    public OAuthToken findOAuthToken(String accessToken) throws InterruptedException {
-        OAuthToken oAuthToken = oAuthTokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new IllegalArgumentException("INVALID ACCESS TOKEN: REFRESH TOKEN NOT FOUND"));
+    public OAuthToken findOAuthToken(String refreshToken) throws InterruptedException {
+        OAuthToken oAuthToken = oAuthTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new IllegalArgumentException("INVALID TOKEN: REFRESH TOKEN NOT FOUND"));
         return oAuthToken;
     }
     @Override

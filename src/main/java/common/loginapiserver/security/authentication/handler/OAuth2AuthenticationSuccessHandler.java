@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -44,21 +45,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUri);
     }
-    protected String getTargetUriWithJwt(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws InterruptedException {
+    protected String getTargetUriWithJwt(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws InterruptedException, IOException {
         Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
-                .map(cookie -> cookie.getValue());
+                .map(Cookie::getValue);
         if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
             throw new RuntimeException("REDIRECT URIS NOT MATCHED");
         }
         String targetUri = redirectUri.orElse(defaultRedirectUrl);
         // memberJwtTokenInfo: AccessToken(cookie), RefreshToken
         MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(authentication);
-        oAuthTokenService.saveOAuthToken(memberJwtDetails.getAccessToken(),
-                                             memberJwtDetails.getRefreshToken());
+        oAuthTokenService.saveOAuthToken(memberJwtDetails.getRefreshToken(), authentication.getPrincipal());
 
         String resultUri = UriComponentsBuilder
                 .fromUriString(targetUri)
-                .queryParam(JwtUtils.ACCESS_TOKEN_KEY, memberJwtDetails.getAccessToken())
+                .queryParam(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString())
                 .build()
                 .toUriString();
         return resultUri;

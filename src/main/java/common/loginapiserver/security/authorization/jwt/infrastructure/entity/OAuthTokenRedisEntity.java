@@ -12,25 +12,25 @@ import javax.persistence.Id;
 @ToString
 public class OAuthTokenRedisEntity {
     @Id
-    private String accessToken;
     private String refreshToken;
+    private Object principal;
     @Builder
-    public OAuthTokenRedisEntity(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
+    public OAuthTokenRedisEntity(String refreshToken, Object principal) {
         this.refreshToken = refreshToken;
+        this.principal = principal;
     }
     public OAuthToken to() {
         OAuthToken domain = OAuthToken.builder()
-                .accessToken(this.accessToken)
                 .refreshToken(this.refreshToken)
+                .principal(this.principal)
                 .build();
         return domain;
     }
     public static OAuthTokenRedisEntity from(OAuthToken oAuthToken) {
         OAuthTokenRedisEntity entity = OAuthTokenRedisEntity
                 .builder()
-                .accessToken(oAuthToken.getAccessToken())
                 .refreshToken(oAuthToken.getRefreshToken())
+                .principal(oAuthToken.getPrincipal())
                 .build();
         return entity;
     }

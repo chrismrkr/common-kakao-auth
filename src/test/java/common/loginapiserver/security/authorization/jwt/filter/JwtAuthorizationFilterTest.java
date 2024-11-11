@@ -21,6 +21,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -70,8 +71,7 @@ public class JwtAuthorizationFilterTest {
         JwtUtils jwtUtils = new JwtUtils(mockSecretKey, expirationUtils);
 
         MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(new MockAuthentication("member1", Arrays.asList("ROLE_USER")));
-        String accessToken = memberJwtDetails.getAccessToken();
-        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+        Cookie cookie = new Cookie(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
@@ -83,8 +83,9 @@ public class JwtAuthorizationFilterTest {
         jwtAuthorizationFilter.doFilterInternal(request, response, filterChain);
         // then
         BDDMockito.verify(filterChain, Mockito.times(1)).doFilter(request, response);
-        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getName(), "member1");
-        Assertions.assertEquals(SecurityContextHolder.getContext().getAuthentication().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Assertions.assertEquals(authentication.getName(), "member1");
+        Assertions.assertEquals(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER")), true);
     }
 
     @Test
@@ -98,9 +99,9 @@ public class JwtAuthorizationFilterTest {
         String accessToken = memberJwtDetails.getAccessToken();
         String refreshToken = memberJwtDetails.getRefreshToken();
         oAuthTokenRepository.save(OAuthToken.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken).build());
-        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+                .refreshToken(refreshToken)
+                .principal("my-principal").build());
+        Cookie cookie = new Cookie(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
@@ -128,10 +129,10 @@ public class JwtAuthorizationFilterTest {
         String accessToken = memberJwtDetails.getAccessToken();
         String refreshToken = memberJwtDetails.getRefreshToken();
         OAuthToken saved = oAuthTokenRepository.save(OAuthToken.builder()
-                .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .principal("my-principal")
                 .build());
-        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+        Cookie cookie = new Cookie(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
@@ -156,9 +157,9 @@ public class JwtAuthorizationFilterTest {
         String accessToken = memberJwtDetails.getAccessToken();
         String refreshToken = memberJwtDetails.getRefreshToken();
         oAuthTokenRepository.save(OAuthToken.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken).build());
-        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+                .refreshToken(refreshToken)
+                .principal("my-principal").build());
+        Cookie cookie = new Cookie(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);
@@ -195,9 +196,9 @@ public class JwtAuthorizationFilterTest {
         String accessToken = memberJwtDetails.getAccessToken();
         String refreshToken = memberJwtDetails.getRefreshToken();
         oAuthTokenRepository.save(OAuthToken.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken).build());
-        Cookie cookie = new Cookie(JwtUtils.ACCESS_TOKEN_KEY, accessToken);
+                .refreshToken(refreshToken)
+                .principal("my-principal").build());
+        Cookie cookie = new Cookie(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString());
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         Cookie[] cookies = Arrays.asList(cookie).stream().toArray(Cookie[]::new);

@@ -26,13 +26,13 @@ public class OAuthTokenRedisRepositoryTest {
     void OAuthToken을_저장할_수_있다() {
         // given
         OAuthToken oAuthToken = OAuthToken.builder()
-                .accessToken("my-access")
                 .refreshToken("my-refresh")
+                .principal("my-principal")
                 .build();
         // when
         oauthTokenRedisRepository.save(oAuthToken);
         // then
-        OAuthToken tokenFind = oauthTokenRedisRepository.findByAccessToken("my-access").get();
+        OAuthToken tokenFind = oauthTokenRedisRepository.findByRefreshToken("my-refresh").get();
         Assertions.assertEquals(oAuthToken.getRefreshToken(), tokenFind.getRefreshToken());
         oauthTokenRedisRepository.delete(oAuthToken);
     }
@@ -49,8 +49,8 @@ public class OAuthTokenRedisRepositoryTest {
             executor.submit(() -> {
                oauthTokenRedisRepository.save(
                        OAuthToken.builder()
-                               .accessToken("my-access")
-                               .refreshToken("my-refresh-" + Integer.toString(finalI))
+                               .refreshToken("my-refresh")
+                               .principal("my-principal-" + Integer.toString(finalI))
                                .build()
                );
                latch.countDown();
@@ -59,18 +59,18 @@ public class OAuthTokenRedisRepositoryTest {
 
         latch.await();
         // then
-        log.info("my-access : {}", oauthTokenRedisRepository.findByAccessToken("my-access").get().getRefreshToken());
+        log.info("my-access : {}", oauthTokenRedisRepository.findByRefreshToken("my-refresh").get().getRefreshToken());
     }
     @Test
     void AccessToken을_key로_OAuthToken을_찾을_수_있다() {
         // given
         OAuthToken oAuthToken = OAuthToken.builder()
-                .accessToken("my-access")
                 .refreshToken("my-refresh")
+                .principal("my-principal")
                 .build();
         oauthTokenRedisRepository.save(oAuthToken);
         // when
-        OAuthToken tokenFind = oauthTokenRedisRepository.findByAccessToken("my-access").get();
+        OAuthToken tokenFind = oauthTokenRedisRepository.findByRefreshToken("my-refresh").get();
 
         // then
         Assertions.assertEquals(oAuthToken.getRefreshToken(), tokenFind.getRefreshToken());
@@ -80,13 +80,13 @@ public class OAuthTokenRedisRepositoryTest {
     void OAuthToken을_key인_AccessToken으로_삭제할_수_있다() {
         // given
         OAuthToken oAuthToken = OAuthToken.builder()
-                .accessToken("my-access")
                 .refreshToken("my-refresh")
+                .principal("my-principal")
                 .build();
         oauthTokenRedisRepository.save(oAuthToken);
         // when
         oauthTokenRedisRepository.delete(oAuthToken);
         // then
-        Assertions.assertEquals(Optional.empty(), oauthTokenRedisRepository.findByAccessToken("my-access"));
+        Assertions.assertEquals(Optional.empty(), oauthTokenRedisRepository.findByRefreshToken("my-refresh"));
     }
 }

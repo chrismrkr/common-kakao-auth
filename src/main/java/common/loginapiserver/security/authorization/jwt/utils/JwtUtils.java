@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.header.Header;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtils {
     public static final String ACCESS_TOKEN_KEY = "JWT";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
     private static final String TYPE_ACCESS = "access";
@@ -38,30 +39,34 @@ public class JwtUtils {
         String name = authentication.getName();
         String authorities = authentication.getAuthorities()
                 .stream()
-                .filter((authority) -> authority.getAuthority().startsWith("ROLE_"))
                 .map(GrantedAuthority::getAuthority)
+                .filter(authority -> authority.startsWith("ROLE_"))
                 .collect(Collectors.joining(","));
 
+        long accessTokenExpiration = expirationUtils.getAccessTokenExpiration();
+        long refreshTokenExpiration = expirationUtils.getRefreshTokenExpiration();
         Date now = expirationUtils.now();
         String accessToken = Jwts.builder()
+                .setHeaderParam("alg", SignatureAlgorithm.HS256)
                 .setSubject(name)
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim("type", TYPE_ACCESS)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expirationUtils.getAccessTokenExpiration()))
+                .setExpiration(new Date(now.getTime() + accessTokenExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         String refreshToken = Jwts.builder()
+                .setHeaderParam("alg", SignatureAlgorithm.HS256)
                 .claim("type", TYPE_REFRESH)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + expirationUtils.getRefreshTokenExpiration()))
+                .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         return MemberJwtDetails.builder()
                 .accessToken(accessToken)
-                .accessTokenExpirationTime(expirationUtils.getAccessTokenExpiration())
+                .accessTokenExpirationTime(accessTokenExpiration)
                 .refreshToken(refreshToken)
-                .refreshTokenExpirationTime(expirationUtils.getRefreshTokenExpiration())
+                .refreshTokenExpirationTime(refreshTokenExpiration)
                 .build();
     }
     public Authentication getAuthentication(String accessToken) {

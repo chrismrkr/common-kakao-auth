@@ -23,30 +23,32 @@ public class OAuthTokenServiceTest {
         // given
         String accessToken = "access1";
         String refreshToken = "refresh1";
+        Object principal = "principal1";
         // when
-        tokenService.saveOAuthToken(accessToken, refreshToken);
+        tokenService.saveOAuthToken(refreshToken, principal);
         // then
-        Assertions.assertEquals(tokenRepository.findByAccessToken("access1").get().getAccessToken(), "access1");
-        Assertions.assertEquals(tokenRepository.findByAccessToken("access1").get().getRefreshToken(), "refresh1");
+        Assertions.assertEquals(tokenRepository.findByRefreshToken(refreshToken).get().getPrincipal(), principal);
     }
     @Test
     void accessToken으로_oAuthToken을_조회할_수_있다() throws InterruptedException {
         // given
         String accessToken = "access2";
         String refreshToken = "refresh2";
-        tokenService.saveOAuthToken(accessToken, refreshToken);
+        Object principal = "principal2";
+        tokenService.saveOAuthToken(refreshToken, principal);
         // when
-        OAuthToken find = tokenService.findOAuthToken("access2");
+        OAuthToken find = tokenService.findOAuthToken(refreshToken);
         // then
-        Assertions.assertEquals(find.getAccessToken(), accessToken);
         Assertions.assertEquals(find.getRefreshToken(), refreshToken);
+        Assertions.assertEquals(find.getPrincipal(), principal);
     }
     @Test
     void 존재하지_않는_accessToken이면_Exception이_발생한다() throws InterruptedException {
         // given
         String accessToken = "access3";
         String refreshToken = "refresh3";
-        tokenService.saveOAuthToken(accessToken, refreshToken);
+        Object principal = "principal3";
+        tokenService.saveOAuthToken(refreshToken, principal);
         // when
         // then
         Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.findOAuthToken("access-no"));
@@ -56,12 +58,13 @@ public class OAuthTokenServiceTest {
         // given
         String accessToken = "access4";
         String refreshToken = "refresh4";
-        tokenService.saveOAuthToken(accessToken, refreshToken);
-        Assertions.assertDoesNotThrow(() -> tokenService.findOAuthToken(accessToken));
+        Object principal = "principal4";
+        tokenService.saveOAuthToken(refreshToken, principal);
+        Assertions.assertDoesNotThrow(() -> tokenService.findOAuthToken(refreshToken));
         // when
-        OAuthToken oAuthToken = tokenService.findOAuthToken(accessToken);
+        OAuthToken oAuthToken = tokenService.findOAuthToken(refreshToken);
         tokenService.deleteOAuthToken(oAuthToken);
         // then
-        Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.findOAuthToken(accessToken));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> tokenService.findOAuthToken(refreshToken));
     }
 }

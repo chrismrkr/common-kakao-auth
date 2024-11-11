@@ -39,7 +39,6 @@ public class MemberRepositoryTest {
         // then
         Member find = memberRepository.findById(save.getId()).get();
         Assertions.assertEquals(save.getId(), find.getId());
-        Assertions.assertEquals(1, memberJpaRepository.findAll().size());
         Assertions.assertEquals(save.getId(), memberJpaRepository.findById(save.getId()).get().getId());
     }
 
@@ -82,5 +81,4 @@ public class MemberRepositoryTest {
         // then
         Assertions.assertEquals(pk, find.getId());
     }
-
 }

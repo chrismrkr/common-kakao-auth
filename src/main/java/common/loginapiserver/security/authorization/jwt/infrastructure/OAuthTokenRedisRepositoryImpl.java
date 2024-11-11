@@ -18,34 +18,34 @@ import java.util.Optional;
 public class OAuthTokenRedisRepositoryImpl implements OAuthTokenRepository {
     private final RedisTemplate redisTemplate;
     @Override
-    public Optional<OAuthToken> findByAccessToken(String accessToken) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    public Optional<OAuthToken> findByRefreshToken(String refreshToken) {
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
-        String refreshToken = valueOperations.get(accessToken);
-        if(Objects.isNull(refreshToken)) {
+        Object principal = valueOperations.get(refreshToken);
+        if(Objects.isNull(principal)) {
             return Optional.empty();
         }
 
         OAuthToken result = OAuthToken.builder()
-                .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .principal(principal)
                 .build();
         return Optional.of(result);
     }
 
     @Override
     public OAuthToken save(OAuthToken oAuthToken) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         OAuthTokenRedisEntity redisEntity = OAuthTokenRedisEntity.from(oAuthToken);
-        valueOperations.set(redisEntity.getAccessToken(), redisEntity.getRefreshToken());
+        valueOperations.set(redisEntity.getRefreshToken(), redisEntity.getPrincipal());
 
         return redisEntity.to();
     }
 
     @Override
     public void delete(OAuthToken oAuthToken) {
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.getAndDelete(oAuthToken.getAccessToken());
+        ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
+        valueOperations.getAndDelete(oAuthToken.getRefreshToken());
     }
 }

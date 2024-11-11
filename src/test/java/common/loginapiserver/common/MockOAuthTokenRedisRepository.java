@@ -12,22 +12,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public class MockOAuthTokenRedisRepository implements OAuthTokenRepository {
-    private final Map<String, String> datas = new HashMap<>();
+    private final Map<String, Object> datas = new HashMap<>();
     private final AtomicBoolean semaphore = new AtomicBoolean(false);
 
     @Override
-    public Optional<OAuthToken> findByAccessToken(String accessToken) throws InterruptedException {
+    public Optional<OAuthToken> findByRefreshToken(String refreshToken) throws InterruptedException {
         waitingForUnlock(50);
         semaphore.set(true);
-        String refreshToken = datas.get(accessToken);
+        Object principal = datas.get(refreshToken);
         semaphore.set(false);
         if(refreshToken == null) {
             return Optional.empty();
         }
 
-        log.info("[SUCCESS] FOUND TOKEN: {}", accessToken);
+        log.info("[SUCCESS] FOUND REFRESH TOKEN: {}", refreshToken);
         return Optional.of(
-                OAuthToken.builder().accessToken(accessToken).refreshToken(refreshToken).build()
+                OAuthToken.builder().refreshToken(refreshToken).principal(principal).build()
         );
     }
 
@@ -40,11 +40,11 @@ public class MockOAuthTokenRedisRepository implements OAuthTokenRepository {
         int waitTime = random.nextInt(100) % 30;
         Thread.sleep(waitTime);
 
-        datas.put(oAuthToken.getAccessToken(), oAuthToken.getRefreshToken());
+        datas.put(oAuthToken.getRefreshToken(), oAuthToken.getPrincipal());
         semaphore.set(false);
-        log.info("[SUCCESS] SAVE TOKEN: {}", oAuthToken.getAccessToken());
-        return OAuthToken.builder().accessToken(oAuthToken.getAccessToken())
-                .refreshToken(oAuthToken.getRefreshToken())
+        log.info("[SUCCESS] SAVE REFRESH TOKEN: {}", oAuthToken.getRefreshToken());
+        return OAuthToken.builder().refreshToken(oAuthToken.getRefreshToken())
+                .principal(oAuthToken.getPrincipal())
                 .build();
     }
 
@@ -52,9 +52,9 @@ public class MockOAuthTokenRedisRepository implements OAuthTokenRepository {
     public void delete(OAuthToken oAuthToken) throws InterruptedException {
         waitingForUnlock(50);
         semaphore.set(true);
-        if(datas.containsKey(oAuthToken.getAccessToken())) {
-            log.info("[SUCCESS] DELETE TOKEN: {}", oAuthToken.getAccessToken());
-            datas.remove(oAuthToken.getAccessToken());
+        if(datas.containsKey(oAuthToken.getRefreshToken())) {
+            log.info("[SUCCESS] DELETE TOKEN: {}", oAuthToken.getRefreshToken());
+            datas.remove(oAuthToken.getRefreshToken());
         }
         semaphore.set(false);
     }

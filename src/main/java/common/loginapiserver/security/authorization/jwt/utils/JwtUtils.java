@@ -43,8 +43,8 @@ public class JwtUtils {
                 .filter(authority -> authority.startsWith("ROLE_"))
                 .collect(Collectors.joining(","));
 
-        long accessTokenExpiration = expirationUtils.getAccessTokenExpiration();
-        long refreshTokenExpiration = expirationUtils.getRefreshTokenExpiration();
+        long accessTokenExpirationMillis = expirationUtils.getAccessTokenExpirationMillis();
+        long refreshTokenExpirationMillis = expirationUtils.getRefreshTokenExpirationMillis();
         Date now = expirationUtils.now();
         String accessToken = Jwts.builder()
                 .setHeaderParam("alg", SignatureAlgorithm.HS256)
@@ -52,21 +52,21 @@ public class JwtUtils {
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim("type", TYPE_ACCESS)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + accessTokenExpiration))
+                .setExpiration(new Date(now.getTime() + accessTokenExpirationMillis))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         String refreshToken = Jwts.builder()
                 .setHeaderParam("alg", SignatureAlgorithm.HS256)
                 .claim("type", TYPE_REFRESH)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + refreshTokenExpiration))
+                .setExpiration(new Date(now.getTime() + refreshTokenExpirationMillis))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
         return MemberJwtDetails.builder()
                 .accessToken(accessToken)
-                .accessTokenExpirationTime(accessTokenExpiration)
+                .accessTokenExpirationTime(accessTokenExpirationMillis)
                 .refreshToken(refreshToken)
-                .refreshTokenExpirationTime(refreshTokenExpiration)
+                .refreshTokenExpirationTime(refreshTokenExpirationMillis)
                 .build();
     }
     public Authentication getAuthentication(String accessToken) {

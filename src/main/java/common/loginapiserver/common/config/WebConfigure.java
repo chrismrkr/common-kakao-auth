@@ -15,7 +15,7 @@ public class WebConfigure implements WebMvcConfigurer {
                 .allowedOrigins(allowedOrigin)
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE")
                 .allowedHeaders("*")
-                .allowCredentials(true) // 자격증명 허용
-                .maxAge(3600); // 허용 시간
+                .allowCredentials(true); // 자격증명 허용
+                ; // 허용 시간
     }
 }

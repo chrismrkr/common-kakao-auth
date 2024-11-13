@@ -1,6 +1,7 @@
 package common.loginapiserver.common.utils;
 
 import org.springframework.util.SerializationUtils;
+import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -29,14 +30,14 @@ public class CookieUtils {
         }
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> name.equals(cookie.getName()))
-                .map(cookie -> cookie.getValue())
+                .map(Cookie::getValue)
                 .findAny();
     }
-    public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
+    public static void addCookie(HttpServletResponse response, String name, String value, int maxAgeSec) {
+        Cookie cookie = new Cookie(name, UriEncoder.encode(value));
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setMaxAge(maxAge);
+        cookie.setMaxAge(maxAgeSec);
         response.addCookie(cookie);
     }
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {

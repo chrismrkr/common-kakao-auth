@@ -23,6 +23,5 @@ public class MemberJwtDetailsTest {
         MemberJwtDetails deserialized = MemberJwtDetails.deserializeFromString(serialized);
         // then
         Assertions.assertEquals(build.getAccessToken(), deserialized.getAccessToken());
-
     }
 }

@@ -8,6 +8,9 @@ import common.loginapiserver.common.utils.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,6 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static common.loginapiserver.security.authentication.oauth.infrastructure.CookieAuthorizationRequestRepository.*;
@@ -54,11 +59,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUri = redirectUri.orElse(defaultRedirectUrl);
         // memberJwtTokenInfo: AccessToken(cookie), RefreshToken
         MemberJwtDetails memberJwtDetails = jwtUtils.generateJwtToken(authentication);
-        oAuthTokenService.saveOAuthToken(memberJwtDetails.getRefreshToken(), authentication.getPrincipal());
-
+        if(authentication instanceof OAuth2AuthenticationToken) {
+            oAuthTokenService.saveOAuthToken(memberJwtDetails.getRefreshToken(),
+                    ((OAuth2AuthenticationToken)authentication).getPrincipal().getName());
+        } else {
+            oAuthTokenService.saveOAuthToken(memberJwtDetails.getRefreshToken(),
+                    authentication.getPrincipal());
+        }
         String resultUri = UriComponentsBuilder
                 .fromUriString(targetUri)
-                .queryParam(JwtUtils.AUTHORIZATION_HEADER, memberJwtDetails.serializeToString())
+                .queryParam(JwtUtils.AUTHORIZATION_HEADER, URLEncoder.encode(memberJwtDetails.serializeToString(), StandardCharsets.UTF_8))
                 .build()
                 .toUriString();
         return resultUri;

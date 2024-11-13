@@ -14,12 +14,12 @@ public class MockExpirationUtils implements ExpirationUtils {
         this.refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
     @Override
-    public long getAccessTokenExpiration() {
+    public long getAccessTokenExpirationMillis() {
         // 1 sec
         return accessTokenExpirationTime;
     }
     @Override
-    public long getRefreshTokenExpiration() {
+    public long getRefreshTokenExpirationMillis() {
         // 2 sec
         return refreshTokenExpirationTime;
     }

@@ -23,16 +23,17 @@ public class MemberJwtDetails implements Serializable{
         this.refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
+
     public String serializeToString() throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream)) {
             objectOutputStream.writeObject(this);
         }
-        return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        return Base64.getUrlEncoder().encodeToString(byteArrayOutputStream.toByteArray());
     }
 
     public static MemberJwtDetails deserializeFromString(String string) throws IOException, ClassNotFoundException {
-        byte[] data = Base64.getDecoder().decode(string);
+        byte[] data = Base64.getUrlDecoder().decode(string);
         try (ObjectInputStream objectInputStream = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return (MemberJwtDetails) objectInputStream.readObject();
         }

@@ -11,17 +11,17 @@ import java.util.Date;
 @Component
 public class JwtExpirationUtils implements ExpirationUtils {
     @Value("${oauth2.jwt.access-token-expiration}")
-    private String accessTokenExpiration;
+    private String accessTokenMinuteExpiration;
     @Value("${oauth2.jwt.refresh-token-expiration}")
-    private String refreshTokenExpiration;
+    private String refreshTokenMinuteExpiration;
 
     @Override
-    public long getAccessTokenExpiration() {
-        return Long.parseLong(accessTokenExpiration) * 1000L;  // 30 min
+    public long getAccessTokenExpirationMillis() {
+        return Long.parseLong(accessTokenMinuteExpiration) * 60 * 1000L;  // millis
     }
     @Override
-    public long getRefreshTokenExpiration() {
-        return Long.parseLong(refreshTokenExpiration) * 1000L; // 7 days
+    public long getRefreshTokenExpirationMillis() {
+        return Long.parseLong(refreshTokenMinuteExpiration) * 60 * 1000L; // millis
     }
     @Override
     public Date now() {

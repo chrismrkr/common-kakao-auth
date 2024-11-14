@@ -30,7 +30,7 @@ public class OAuthTokenRedisRepositoryTest {
                 .principal("my-principal")
                 .build();
         // when
-        oauthTokenRedisRepository.save(oAuthToken);
+        oauthTokenRedisRepository.save(oAuthToken, 100);
         // then
         OAuthToken tokenFind = oauthTokenRedisRepository.findByRefreshToken("my-refresh").get();
         Assertions.assertEquals(oAuthToken.getRefreshToken(), tokenFind.getRefreshToken());
@@ -51,7 +51,7 @@ public class OAuthTokenRedisRepositoryTest {
                        OAuthToken.builder()
                                .refreshToken("my-refresh")
                                .principal("my-principal-" + Integer.toString(finalI))
-                               .build()
+                               .build(), 100
                );
                latch.countDown();
             });
@@ -68,7 +68,7 @@ public class OAuthTokenRedisRepositoryTest {
                 .refreshToken("my-refresh")
                 .principal("my-principal")
                 .build();
-        oauthTokenRedisRepository.save(oAuthToken);
+        oauthTokenRedisRepository.save(oAuthToken, 100);
         // when
         OAuthToken tokenFind = oauthTokenRedisRepository.findByRefreshToken("my-refresh").get();
 
@@ -83,7 +83,7 @@ public class OAuthTokenRedisRepositoryTest {
                 .refreshToken("my-refresh")
                 .principal("my-principal")
                 .build();
-        oauthTokenRedisRepository.save(oAuthToken);
+        oauthTokenRedisRepository.save(oAuthToken, 100);
         // when
         oauthTokenRedisRepository.delete(oAuthToken);
         // then

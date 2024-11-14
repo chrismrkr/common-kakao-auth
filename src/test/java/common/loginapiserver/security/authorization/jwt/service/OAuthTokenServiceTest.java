@@ -1,10 +1,12 @@
 package common.loginapiserver.security.authorization.jwt.service;
 
+import common.loginapiserver.common.MockExpirationUtils;
 import common.loginapiserver.common.MockOAuthTokenRepository;
 import common.loginapiserver.security.authorization.jwt.filter.port.TokenService;
 import common.loginapiserver.security.authorization.jwt.domain.OAuthToken;
 import common.loginapiserver.security.authorization.jwt.service.OAuthTokenService;
 import common.loginapiserver.security.authorization.jwt.service.port.OAuthTokenRepository;
+import common.loginapiserver.security.authorization.jwt.utils.ExpirationUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,11 +14,12 @@ import org.junit.jupiter.api.Test;
 public class OAuthTokenServiceTest {
     static OAuthTokenRepository tokenRepository;
     static TokenService tokenService;
-
+    static ExpirationUtils expirationUtils;
     @BeforeAll
     static void init() {
         tokenRepository = new MockOAuthTokenRepository();
-        tokenService = new OAuthTokenService(tokenRepository);
+        expirationUtils = new MockExpirationUtils(100, 100);
+        tokenService = new OAuthTokenService(expirationUtils, tokenRepository);
     }
     @Test
     void accessToken과_refreshToken을_전달받아_OAuthToken을_저장한다() throws InterruptedException {

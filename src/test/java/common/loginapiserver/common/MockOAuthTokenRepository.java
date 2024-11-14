@@ -17,7 +17,7 @@ public class MockOAuthTokenRepository implements OAuthTokenRepository {
     }
 
     @Override
-    public OAuthToken save(OAuthToken oAuthToken) {
+    public OAuthToken save(OAuthToken oAuthToken, long minuteDuration) {
         if(datas.size() > 0) {
             Optional<OAuthToken> any = datas.stream().filter(token -> token.getRefreshToken().equals(oAuthToken.getRefreshToken())).findAny();
             if(!any.isEmpty()) {

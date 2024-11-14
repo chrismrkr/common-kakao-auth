@@ -22,7 +22,7 @@ public class MockOAuthTokenRedisRepositoryTest {
                 .principal("my-principal")
                 .build();
         // when
-        OAuthToken save = mockOAuthTokenRedisRepository.save(oAuthToken);
+        OAuthToken save = mockOAuthTokenRedisRepository.save(oAuthToken, 100);
         // then
         Assertions.assertEquals(save.getRefreshToken(), oAuthToken.getRefreshToken());
         Assertions.assertEquals(save.getPrincipal(), oAuthToken.getPrincipal());
@@ -43,7 +43,7 @@ public class MockOAuthTokenRedisRepositoryTest {
                             OAuthToken.builder()
                                     .refreshToken("my-refresh")
                                     .principal("my-principal-" + Integer.toString(finalI))
-                                    .build()
+                                    .build(), 100
                     );
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

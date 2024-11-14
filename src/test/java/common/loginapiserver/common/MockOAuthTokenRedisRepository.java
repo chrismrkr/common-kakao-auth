@@ -32,7 +32,7 @@ public class MockOAuthTokenRedisRepository implements OAuthTokenRepository {
     }
 
     @Override
-    public OAuthToken save(OAuthToken oAuthToken) throws InterruptedException {
+    public OAuthToken save(OAuthToken oAuthToken, long minuteDuration) throws InterruptedException {
         waitingForUnlock(50);
         semaphore.set(true);
 

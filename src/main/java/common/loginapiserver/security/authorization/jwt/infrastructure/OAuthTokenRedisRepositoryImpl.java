@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -34,11 +36,11 @@ public class OAuthTokenRedisRepositoryImpl implements OAuthTokenRepository {
     }
 
     @Override
-    public OAuthToken save(OAuthToken oAuthToken) {
+    public OAuthToken save(OAuthToken oAuthToken, long durationMinutes) {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         OAuthTokenRedisEntity redisEntity = OAuthTokenRedisEntity.from(oAuthToken);
-        valueOperations.set(redisEntity.getRefreshToken(), redisEntity.getPrincipal());
+        valueOperations.set(redisEntity.getRefreshToken(), redisEntity.getPrincipal(), Duration.of(durationMinutes, ChronoUnit.MINUTES));
 
         return redisEntity.to();
     }

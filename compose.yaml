@@ -8,6 +8,15 @@ services:
       - "80:80"
     depends_on:
       - login-api-was
+      - login-app-frontend
+    networks:
+      - login-api-test-net
+
+  login-app-frontend:
+    image: login-app-frontend:latest
+    container_name: login-app-frontend
+    ports:
+      - "80"
     networks:
       - login-api-test-net
 
@@ -19,11 +28,12 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://edu-mysql:3306/edu?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_REDIS_HOST: edu-redis
-      OAUTH2_URL_ALLOW-ORIGIN: http://localhost:3000
-      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID:
-      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT-URI:
+      OAUTH2_URL_ALLOW-ORIGIN: http://localhost:80
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID: your-restapi-key
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_REDIRECT-URI: http://localhost/api/login/oauth2/kakao
     depends_on:
       - edu-mysql
+    restart: always
     networks:
       - login-api-test-net
 

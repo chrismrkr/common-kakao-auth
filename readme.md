@@ -6,32 +6,23 @@ Authentication & Authorization Server using JWT
 - Kakao OAuth2.0을 통한 로그인 기능 지원
 - JWT를 활용한 인가 기능 지원
 
-## 간단하게 Docker-compose로 실행하는 방법
-#### Step 1. 프로젝트 pull
-#### Step 2. docker image build
-```shell
-# 프로젝트 루트 디렉토리에서 실행
-docker build -t login-api-was ./
-```
-#### Step 3. REST API 키 발급 및 Redirect URI 설정
+## Quick Start in Local
+### 1. Pull & Create Frontend Image 
+- ```git clone https://github.com/chrismrkr/login-test-frontend.git```
+- Build Docker Image : ```docker build -t login-app-frontend ./```
+### 2. Pull & Create Backend Image
+- ```git clone https://github.com/chrismrkr/common-kakao-auth.git```
+- Build Jar File : ```./gradlew clend build -x test```
+- Build Docker Image : ```docker build -t login-api-was```
+### 3. Set Configuration in docker.yaml
+- 1. https://developers.kakao.com > Create 'My Application' > GET REST API Key
+- 2. SET OAuth Redirect URI to http://localhost/api/login/oauth2/kakao
 
-https://developers.kakao.com 카카오 개발자 홈페이지에 접속하여 '내 애플리케이션'을 생성하여 REST API 키를 발급하고 카카오 로그인에서 사용할 OAuth Redirect URI를 설정한다.
+### 4. Run in Docker Compose
+```docker compose up```
 
-OAuth Redirect URI는 http://localhost:80/api/login/oauth2/kakao로 설정한다.
-
-#### Step 4. compose.yaml 수정
-
-발급받은 REST API Key를 SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID에 설정한다.
-
-```yaml
-SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID: [나의 REST API KEY]
-```
-
-#### Step 5. docker compose로 실행
-```shell
-docker compose up
-```
-컨테이너 실행 후, http 80 포트로 통신할 수 있음
+## 개발 후기
+https://okkkk-aanng.tistory.com/32
 
 ## 주요 API
 
@@ -67,16 +58,6 @@ FilterSecurityInterceptor 참고 링크: https://github.com/chrismrkr/WIL/blob/m
 
 ![jwt-auth-flow](https://github.com/chrismrkr/common-kakao-auth/assets/62477958/b5ebe6c2-c81a-4e19-81ca-34b9338b626c)
 
-## Access Token, Refresh Token 관리 방식
-
-+ Access Token: httpOnly=true Cookie에 담아서 클라이언트에 전달함.
-+ Refresh Token: 서버 DB에 저장함. 만약 Access Token이 만료되면, DB의 Refresh Token을 확인하여 신규 Access Token 발급 여부를 결정함.
-
-## 보안성 진단
-
-+ XSS: 안전함
-
-JWT를 HttpOnly=true Cookie로 전달하므로 XSS 공격을 피할 수 있음
 
 + CSRF: 대응방안 필요
 

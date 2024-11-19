@@ -13,10 +13,11 @@ Authentication & Authorization Server using JWT
 ### 2. Pull & Create Backend Image
 - ```git clone https://github.com/chrismrkr/common-kakao-auth.git```
 - Build Jar File : ```./gradlew clend build -x test```
-- Build Docker Image : ```docker build -t login-api-was```
+- Build Docker Image : ```docker build -t login-api-was ./```
 ### 3. Set Configuration in docker.yaml
-- 1. https://developers.kakao.com > Create 'My Application' > GET REST API Key
-- 2. SET OAuth Redirect URI to http://localhost/api/login/oauth2/kakao
+- 1. GO https://developers.kakao.com > CREATE 'My Application' > GET REST API Key > SET REST API KEY
+  - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_KAKAO_CLIENT-ID: your-restapi-key
+- 2. SET OAuth Redirect URI to http://localhost/api/login/oauth2/kakao in "https://developers.kakao.com > 'My App'"
 
 ### 4. Run in Docker Compose
 ```docker compose up```
